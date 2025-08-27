@@ -132,7 +132,7 @@ router.delete('/:id', proveedoresController.deleteProveedor);
 
 /**
  * @swagger
- * /api/proveedores/{id}/hard:
+ * /api/proveedores/hard/{id}:
  *   delete:
  *     summary: Eliminar físicamente un proveedor (eliminación permanente)
  *     tags: [Proveedores]
@@ -149,6 +149,6 @@ router.delete('/:id', proveedoresController.deleteProveedor);
  *       404:
  *         description: Proveedor no encontrado
  */
-router.delete('/:id/hard', proveedoresController.hardDeleteProveedor);
+router.delete('/hard/:id', proveedoresController.hardDeleteProveedor);
 
 module.exports = router;

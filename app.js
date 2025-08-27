@@ -19,15 +19,19 @@ const swaggerOptions = {
       version: '1.0.0',
       description: 'Documentación de la API para el manejo de proveedores',
       contact: {
-        name: 'Tu Nombre',
-        email: 'tu@email.com'
+        name: 'Dennis Cornel',
+        email: 'dcornels@miumg.edu.gt'
       }
     },
     servers: [
       {
-        url: `http://localhost:${PORT}`,
-        description: 'Servidor local'
-      }
+        url: 'https://erpcompras-production.up.railway.app', // ✅ URL correcta
+        description: 'Production server',
+      },
+      {
+        url: 'http://localhost:3000', // ✅ Para desarrollo
+        description: 'Local server',
+      },
     ],
     components: {
       schemas: {
@@ -81,10 +85,11 @@ const swaggerOptions = {
       }
     }
   },
-  apis: ['./routes/*.js'] // Ruta a tus archivos de rutas
+  apis: ['./routes/*.js', './app.js'], // ✅ Ajusta según tu estructura
 };
 
 const swaggerSpec = swaggerJsdoc(swaggerOptions);
+console.log('Swagger specification generated:', swaggerSpec);
 
 // Middleware
 app.use(cors({
@@ -95,13 +100,21 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
-  optionsSuccessStatus: 200
+  optionsSuccessStatus: 204
 }));
 app.use(bodyParser.json());
 
-// ✅ Manejar preflight requests
-app.options('*', cors()); // Habilitar preflight para todas las rutas
-
+// ✅ Manejo explícito de preflight
+app.use((req, res, next) => {
+  if (req.method === 'OPTIONS') {
+    res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    res.header('Access-Control-Allow-Credentials', 'true');
+    return res.sendStatus(204);
+  }
+  next();
+});
 
 // Inicializar base de datos al iniciar (opcional)
 //const initDatabase = require('./scripts/initDB');
@@ -113,12 +126,6 @@ app.use('/api/proveedores', proveedoresRoutes);
 // Ruta para la documentación Swagger
 app.use('/api-docs', cors(), swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-// Manejo de errores
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ error: 'Algo salió mal!' });
-});
-
 // ✅ Health check endpoint
 app.get('/health', (req, res) => {
   res.status(200).json({ 
@@ -126,6 +133,12 @@ app.get('/health', (req, res) => {
     cors: 'configured',
     timestamp: new Date().toISOString()
   });
+});
+
+// Manejo de errores
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ error: 'Algo salió mal!' });
 });
 
 // Iniciar servidor
