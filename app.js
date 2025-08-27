@@ -6,7 +6,9 @@ const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.DB_PORT || 3000;
+
+
 
 // Configuración de Swagger
 const swaggerOptions = {
@@ -88,6 +90,10 @@ const swaggerSpec = swaggerJsdoc(swaggerOptions);
 app.use(cors());
 app.use(bodyParser.json());
 
+// Inicializar base de datos al iniciar (opcional)
+//const initDatabase = require('./scripts/initDB');
+//initDatabase();
+
 // Rutas
 app.use('/api/proveedores', proveedoresRoutes);
 
@@ -101,7 +107,7 @@ app.use((err, req, res, next) => {
 });
 
 // Iniciar servidor
-app.listen(PORT, () => {
-  console.log(`Servidor de proveedores corriendo en http://localhost:${PORT}`);
-  console.log(`Documentación Swagger disponible en http://localhost:${PORT}/api-docs`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Servidor de proveedores corriendo en http://0.0.0.0:${PORT}`);
+  console.log(`Documentación Swagger disponible en http://0.0.0.0:${PORT}/api-docs`);
 });
