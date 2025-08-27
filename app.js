@@ -87,8 +87,21 @@ const swaggerOptions = {
 const swaggerSpec = swaggerJsdoc(swaggerOptions);
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: [
+    'http://localhost:3000', // Desarrollo local
+    'https://erpcompras-production.up.railway.app' // Tu propio backend
+  ],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
+  optionsSuccessStatus: 200
+}));
 app.use(bodyParser.json());
+
+// ✅ Manejar preflight requests
+app.options('*', cors()); // Habilitar preflight para todas las rutas
+
 
 // Inicializar base de datos al iniciar (opcional)
 //const initDatabase = require('./scripts/initDB');
@@ -98,12 +111,21 @@ app.use(bodyParser.json());
 app.use('/api/proveedores', proveedoresRoutes);
 
 // Ruta para la documentación Swagger
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use('/api-docs', cors(), swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Manejo de errores
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ error: 'Algo salió mal!' });
+});
+
+// ✅ Health check endpoint
+app.get('/health', (req, res) => {
+  res.status(200).json({ 
+    status: 'OK', 
+    cors: 'configured',
+    timestamp: new Date().toISOString()
+  });
 });
 
 // Iniciar servidor
