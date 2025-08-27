@@ -89,7 +89,6 @@ const swaggerOptions = {
 };
 
 const swaggerSpec = swaggerJsdoc(swaggerOptions);
-console.log('Swagger specification generated:', swaggerSpec);
 
 // Middleware
 app.use(cors({
