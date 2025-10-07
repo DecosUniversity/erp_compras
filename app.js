@@ -1,11 +1,19 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const proveedoresRoutes = require('./routes/proveedoresRoutes');
 const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
+const DatabaseInitializer = require('./config/initDB');
+
+const proveedoresRoutes = require('./routes/proveedoresRoutes');
+const ordenesRoutes = require('./routes/ordenesCompra');
 
 const app = express();
+
+// Inicializar base de datos
+DatabaseInitializer.initialize();
+
+// Puerto
 const PORT = process.env.DB_PORT || 3000;
 
 
@@ -121,6 +129,7 @@ app.use((req, res, next) => {
 
 // Rutas
 app.use('/api/proveedores', proveedoresRoutes);
+app.use('/api/ordenes-compra', ordenesRoutes);
 
 // Ruta para la documentación Swagger
 app.use('/api-docs', cors(), swaggerUi.serve, swaggerUi.setup(swaggerSpec));
