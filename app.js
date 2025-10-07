@@ -10,11 +10,8 @@ const ordenesRoutes = require('./routes/ordenesCompra');
 
 const app = express();
 
-// Inicializar base de datos
-DatabaseInitializer.initialize();
-
 // Puerto
-const PORT = process.env.DB_PORT || 3000;
+const PORT = process.env.PORT || 3000;
 
 
 
@@ -294,12 +291,24 @@ app.use('/api/ordenes-compra', ordenesRoutes);
 app.use('/api-docs', cors(), swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // ✅ Health check endpoint
-app.get('/health', (req, res) => {
-  res.status(200).json({ 
-    status: 'OK', 
-    cors: 'configured',
-    timestamp: new Date().toISOString()
-  });
+app.get('/health', async (req, res) => {
+  try {
+    const db = require('./config/db');
+    await db.execute('SELECT 1');
+    res.status(200).json({ 
+      status: 'OK', 
+      database: 'connected',
+      cors: 'configured',
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    res.status(503).json({ 
+      status: 'ERROR', 
+      database: 'disconnected',
+      error: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
 });
 
 // Manejo de errores
@@ -308,8 +317,22 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Algo salió mal!' });
 });
 
+// Función para iniciar el servidor con inicialización de BD
+async function startServer() {
+  try {
+    // Iniciar servidor primero
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log(`Servidor de proveedores corriendo en http://0.0.0.0:${PORT}`);
+      console.log(`Documentación Swagger disponible en http://0.0.0.0:${PORT}/api-docs`);
+    });
+
+    // Luego inicializar base de datos de forma asíncrona
+    DatabaseInitializer.initialize();
+  } catch (error) {
+    console.error('❌ Error al iniciar el servidor:', error.message);
+    process.exit(1);
+  }
+}
+
 // Iniciar servidor
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Servidor de proveedores corriendo en http://0.0.0.0:${PORT}`);
-  console.log(`Documentación Swagger disponible en http://0.0.0.0:${PORT}/api-docs`);
-});
+startServer();

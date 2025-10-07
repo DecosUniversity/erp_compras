@@ -5,6 +5,9 @@ class DatabaseInitializer {
     try {
       console.log('🔄 Inicializando base de datos...');
 
+      // Verificar conexión antes de proceder
+      await db.checkConnection();
+
       // 1. Crear tabla de proveedores si no existe
       await this.crearTablaProveedores();
       
@@ -20,7 +23,8 @@ class DatabaseInitializer {
       console.log('✅ Base de datos inicializada correctamente');
     } catch (error) {
       console.error('❌ Error inicializando base de datos:', error.message);
-      throw error;
+      // En lugar de hacer throw, continuamos sin la inicialización
+      console.log('⚠️ La aplicación continuará sin inicialización de BD. Las tablas se crearán bajo demanda.');
     }
   }
 
