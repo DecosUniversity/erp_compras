@@ -23,9 +23,9 @@ const swaggerOptions = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: 'API de Proveedores',
+      title: 'API de ERP Compras',
       version: '1.0.0',
-      description: 'Documentación de la API para el manejo de proveedores',
+      description: 'Documentación de la API para el manejo de proveedores, órdenes de compra y detalles de orden',
       contact: {
         name: 'Dennis Cornel',
         email: 'dcornels@miumg.edu.gt'
@@ -87,6 +87,165 @@ const swaggerOptions = {
               type: 'string',
               format: 'date',
               example: '2023-01-01'
+            }
+          }
+        },
+        OrdenCompra: {
+          type: 'object',
+          properties: {
+            id_orden_compra: {
+              type: 'integer',
+              example: 1
+            },
+            id_proveedor: {
+              type: 'integer',
+              example: 1
+            },
+            numero_orden: {
+              type: 'string',
+              example: 'OC-2024-001'
+            },
+            fecha_orden: {
+              type: 'string',
+              format: 'date',
+              example: '2024-01-15'
+            },
+            fecha_entrega_esperada: {
+              type: 'string',
+              format: 'date',
+              example: '2024-01-25'
+            },
+            estado: {
+              type: 'string',
+              enum: ['Pendiente', 'Aprobada', 'Enviada', 'Recibida', 'Cancelada'],
+              example: 'Pendiente'
+            },
+            moneda: {
+              type: 'string',
+              example: 'GTQ'
+            },
+            terminos_pago: {
+              type: 'string',
+              example: '30 días'
+            },
+            observaciones: {
+              type: 'string',
+              example: 'Entrega urgente requerida'
+            },
+            creado_por: {
+              type: 'string',
+              example: 'usuario@empresa.com'
+            },
+            fecha_creacion: {
+              type: 'string',
+              format: 'datetime',
+              example: '2024-01-15T10:30:00Z'
+            },
+            nombre_proveedor: {
+              type: 'string',
+              example: 'Proveedor Ejemplo S.A.'
+            },
+            contacto_proveedor: {
+              type: 'string',
+              example: 'Juan Pérez'
+            }
+          }
+        },
+        DetalleOrden: {
+          type: 'object',
+          properties: {
+            id_detalle: {
+              type: 'integer',
+              example: 1
+            },
+            id_orden_compra: {
+              type: 'integer',
+              example: 1
+            },
+            id_producto: {
+              type: 'integer',
+              example: 101
+            },
+            cantidad: {
+              type: 'number',
+              example: 10
+            },
+            precio_unitario: {
+              type: 'number',
+              format: 'decimal',
+              example: 25.50
+            },
+            descuento: {
+              type: 'number',
+              format: 'decimal',
+              example: 5.0
+            },
+            descripcion_producto: {
+              type: 'string',
+              example: 'Producto de alta calidad'
+            },
+            numero_linea: {
+              type: 'integer',
+              example: 1
+            },
+            nombre_producto: {
+              type: 'string',
+              example: 'Producto ABC'
+            },
+            codigo_producto: {
+              type: 'string',
+              example: 'PROD-001'
+            }
+          }
+        },
+        OrdenCompraCompleta: {
+          type: 'object',
+          allOf: [
+            { $ref: '#/components/schemas/OrdenCompra' },
+            {
+              type: 'object',
+              properties: {
+                detalles: {
+                  type: 'array',
+                  items: { $ref: '#/components/schemas/DetalleOrden' }
+                }
+              }
+            }
+          ]
+        },
+        ApiResponse: {
+          type: 'object',
+          properties: {
+            success: {
+              type: 'boolean',
+              example: true
+            },
+            message: {
+              type: 'string',
+              example: 'Operación realizada exitosamente'
+            },
+            data: {
+              type: 'object'
+            },
+            error: {
+              type: 'string'
+            }
+          }
+        },
+        ErrorResponse: {
+          type: 'object',
+          properties: {
+            success: {
+              type: 'boolean',
+              example: false
+            },
+            message: {
+              type: 'string',
+              example: 'Error en la operación'
+            },
+            error: {
+              type: 'string',
+              example: 'Detalles del error'
             }
           }
         }

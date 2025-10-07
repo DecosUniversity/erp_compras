@@ -3,6 +3,45 @@ const router = express.Router();
 const OrdenCompra = require('../models/ordenCompra');
 const DetalleOrden = require('../models/detalleOrden');
 
+/**
+ * @swagger
+ * tags:
+ *   - name: Órdenes de Compra
+ *     description: Gestión de órdenes de compra
+ *   - name: Detalles de Orden
+ *     description: Gestión de detalles de órdenes de compra
+ */
+
+/**
+ * @swagger
+ * /api/ordenes-compra:
+ *   get:
+ *     summary: Obtener todas las órdenes de compra
+ *     tags: [Órdenes de Compra]
+ *     description: Recupera una lista de todas las órdenes de compra con información del proveedor
+ *     responses:
+ *       200:
+ *         description: Lista de órdenes de compra obtenida exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/OrdenCompra'
+ *       500:
+ *         description: Error del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
+
 // GET /api/ordenes-compra - Obtener todas las órdenes
 router.get('/', async (req, res) => {
   try {
@@ -17,6 +56,47 @@ router.get('/', async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/ordenes-compra/{id}:
+ *   get:
+ *     summary: Obtener una orden de compra específica
+ *     tags: [Órdenes de Compra]
+ *     description: Recupera una orden de compra específica por ID incluyendo sus detalles
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID único de la orden de compra
+ *         schema:
+ *           type: integer
+ *           example: 1
+ *     responses:
+ *       200:
+ *         description: Orden de compra obtenida exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   $ref: '#/components/schemas/OrdenCompraCompleta'
+ *       404:
+ *         description: Orden de compra no encontrada
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       500:
+ *         description: Error del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
 // GET /api/ordenes-compra/:id - Obtener orden específica
 router.get('/:id', async (req, res) => {
   try {
@@ -45,6 +125,115 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/ordenes-compra:
+ *   post:
+ *     summary: Crear una nueva orden de compra
+ *     tags: [Órdenes de Compra]
+ *     description: Crea una nueva orden de compra con detalles opcionales
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - orden
+ *             properties:
+ *               orden:
+ *                 type: object
+ *                 required:
+ *                   - id_proveedor
+ *                   - numero_orden
+ *                   - fecha_orden
+ *                 properties:
+ *                   id_proveedor:
+ *                     type: integer
+ *                     example: 1
+ *                   numero_orden:
+ *                     type: string
+ *                     example: "OC-2024-001"
+ *                   fecha_orden:
+ *                     type: string
+ *                     format: date
+ *                     example: "2024-01-15"
+ *                   fecha_entrega_esperada:
+ *                     type: string
+ *                     format: date
+ *                     example: "2024-01-25"
+ *                   estado:
+ *                     type: string
+ *                     enum: [Pendiente, Aprobada, Enviada, Recibida, Cancelada]
+ *                     example: "Pendiente"
+ *                   moneda:
+ *                     type: string
+ *                     example: "GTQ"
+ *                   terminos_pago:
+ *                     type: string
+ *                     example: "30 días"
+ *                   observaciones:
+ *                     type: string
+ *                     example: "Entrega urgente"
+ *                   creado_por:
+ *                     type: string
+ *                     example: "usuario@empresa.com"
+ *               detalles:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   required:
+ *                     - id_producto
+ *                     - cantidad
+ *                     - precio_unitario
+ *                   properties:
+ *                     id_producto:
+ *                       type: integer
+ *                       example: 101
+ *                     cantidad:
+ *                       type: number
+ *                       example: 10
+ *                     precio_unitario:
+ *                       type: number
+ *                       example: 25.50
+ *                     descuento:
+ *                       type: number
+ *                       example: 5.0
+ *                     descripcion_producto:
+ *                       type: string
+ *                       example: "Producto de alta calidad"
+ *                     numero_linea:
+ *                       type: integer
+ *                       example: 1
+ *     responses:
+ *       201:
+ *         description: Orden de compra creada exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: "Orden de compra creada exitosamente"
+ *                 data:
+ *                   $ref: '#/components/schemas/OrdenCompraCompleta'
+ *       400:
+ *         description: Datos de entrada inválidos
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       500:
+ *         description: Error del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
 // POST /api/ordenes-compra - Crear nueva orden
 router.post('/', async (req, res) => {
   try {
@@ -89,6 +278,59 @@ router.post('/', async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/ordenes-compra/{id}:
+ *   put:
+ *     summary: Actualizar una orden de compra
+ *     tags: [Órdenes de Compra]
+ *     description: Actualiza los datos de una orden de compra existente
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID único de la orden de compra
+ *         schema:
+ *           type: integer
+ *           example: 1
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               estado:
+ *                 type: string
+ *                 enum: [Pendiente, Aprobada, Enviada, Recibida, Cancelada]
+ *                 example: "Aprobada"
+ *               fecha_entrega_esperada:
+ *                 type: string
+ *                 format: date
+ *                 example: "2024-01-30"
+ *               observaciones:
+ *                 type: string
+ *                 example: "Cambio en fecha de entrega"
+ *     responses:
+ *       200:
+ *         description: Orden de compra actualizada exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ApiResponse'
+ *       404:
+ *         description: Orden de compra no encontrada
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       500:
+ *         description: Error del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
 // PUT /api/ordenes-compra/:id - Actualizar orden
 router.put('/:id', async (req, res) => {
   try {
@@ -117,6 +359,41 @@ router.put('/:id', async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/ordenes-compra/{id}:
+ *   delete:
+ *     summary: Eliminar una orden de compra
+ *     tags: [Órdenes de Compra]
+ *     description: Elimina una orden de compra y todos sus detalles asociados
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID único de la orden de compra
+ *         schema:
+ *           type: integer
+ *           example: 1
+ *     responses:
+ *       200:
+ *         description: Orden de compra eliminada exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ApiResponse'
+ *       404:
+ *         description: Orden de compra no encontrada
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       500:
+ *         description: Error del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
 // DELETE /api/ordenes-compra/:id - Eliminar orden
 router.delete('/:id', async (req, res) => {
   try {
@@ -142,6 +419,77 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/ordenes-compra/{id}/detalles:
+ *   post:
+ *     summary: Agregar producto a una orden de compra
+ *     tags: [Detalles de Orden]
+ *     description: Agrega un nuevo producto (detalle) a una orden de compra existente
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID único de la orden de compra
+ *         schema:
+ *           type: integer
+ *           example: 1
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - id_producto
+ *               - cantidad
+ *               - precio_unitario
+ *             properties:
+ *               id_producto:
+ *                 type: integer
+ *                 example: 101
+ *               cantidad:
+ *                 type: number
+ *                 example: 5
+ *               precio_unitario:
+ *                 type: number
+ *                 example: 15.75
+ *               descuento:
+ *                 type: number
+ *                 example: 2.0
+ *               descripcion_producto:
+ *                 type: string
+ *                 example: "Producto adicional"
+ *               numero_linea:
+ *                 type: integer
+ *                 example: 2
+ *     responses:
+ *       201:
+ *         description: Producto agregado exitosamente a la orden
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: "Producto agregado a la orden"
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id_detalle:
+ *                       type: integer
+ *                       example: 1
+ *       500:
+ *         description: Error del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
 // Rutas para detalles de orden
 router.post('/:id/detalles', async (req, res) => {
   try {
@@ -164,6 +512,57 @@ router.post('/:id/detalles', async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/ordenes-compra/detalles/{idDetalle}:
+ *   put:
+ *     summary: Actualizar un detalle de orden
+ *     tags: [Detalles de Orden]
+ *     description: Actualiza la información de un detalle específico de una orden de compra
+ *     parameters:
+ *       - in: path
+ *         name: idDetalle
+ *         required: true
+ *         description: ID único del detalle de orden
+ *         schema:
+ *           type: integer
+ *           example: 1
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               cantidad:
+ *                 type: number
+ *                 example: 8
+ *               precio_unitario:
+ *                 type: number
+ *                 example: 20.00
+ *               descuento:
+ *                 type: number
+ *                 example: 3.0
+ *     responses:
+ *       200:
+ *         description: Detalle de orden actualizado exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ApiResponse'
+ *       404:
+ *         description: Detalle de orden no encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       500:
+ *         description: Error del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
 router.put('/detalles/:idDetalle', async (req, res) => {
   try {
     const actualizado = await DetalleOrden.actualizar(
@@ -191,6 +590,41 @@ router.put('/detalles/:idDetalle', async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/ordenes-compra/detalles/{idDetalle}:
+ *   delete:
+ *     summary: Eliminar un detalle de orden
+ *     tags: [Detalles de Orden]
+ *     description: Elimina un detalle específico de una orden de compra
+ *     parameters:
+ *       - in: path
+ *         name: idDetalle
+ *         required: true
+ *         description: ID único del detalle de orden
+ *         schema:
+ *           type: integer
+ *           example: 1
+ *     responses:
+ *       200:
+ *         description: Detalle de orden eliminado exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ApiResponse'
+ *       404:
+ *         description: Detalle de orden no encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       500:
+ *         description: Error del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
 router.delete('/detalles/:idDetalle', async (req, res) => {
   try {
     const eliminado = await DetalleOrden.eliminar(req.params.idDetalle);
