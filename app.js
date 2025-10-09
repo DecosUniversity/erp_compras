@@ -268,7 +268,9 @@ const swaggerSpec = swaggerJsdoc(swaggerOptions);
 // Middleware
 app.use(cors({
   origin: [
-    'http://localhost:3000', // Desarrollo local
+    'http://localhost:3000', // Desarrollo local backend
+    'http://localhost:5173', // Desarrollo local frontend
+    'http://localhost:5174', // Desarrollo local frontend (puerto alternativo)
     'https://erpcompras-production.up.railway.app' // Tu propio backend
   ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
