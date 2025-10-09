@@ -11,8 +11,8 @@ class DetalleOrden {
 
     // Calcular valores si no se proporcionan
     const subtotal = subtotal_linea || (cantidad * precio_unitario * (1 - (descuento || 0) / 100));
-    const impuestos = impuestos_linea || (subtotal * 0.15); // 15% de impuestos por defecto
-    const total = total_linea || (subtotal + impuestos);
+    const impuestos = impuestos_linea || 0; // Los precios ya incluyen impuestos
+    const total = total_linea || subtotal; // Total = subtotal (sin impuestos adicionales)
 
     const [result] = await db.execute(
       `INSERT INTO detalles_orden_compra 
@@ -45,8 +45,8 @@ class DetalleOrden {
 
     // Calcular valores si no se proporcionan
     const subtotal = subtotal_linea || (cantidad * precio_unitario * (1 - (descuento || 0) / 100));
-    const impuestos = impuestos_linea || (subtotal * 0.15); // 15% de impuestos por defecto
-    const total = total_linea || (subtotal + impuestos);
+    const impuestos = impuestos_linea || 0; // Los precios ya incluyen impuestos
+    const total = total_linea || subtotal; // Total = subtotal (sin impuestos adicionales)
 
     const [result] = await db.execute(
       `UPDATE detalles_orden_compra 
