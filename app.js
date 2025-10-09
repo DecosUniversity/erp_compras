@@ -161,7 +161,8 @@ const swaggerOptions = {
             },
             id_producto: {
               type: 'integer',
-              example: 101
+              example: 101,
+              description: 'ID del producto (referencia externa)'
             },
             cantidad: {
               type: 'number',
@@ -177,6 +178,24 @@ const swaggerOptions = {
               format: 'decimal',
               example: 5.0
             },
+            subtotal_linea: {
+              type: 'number',
+              format: 'decimal',
+              example: 240.50,
+              description: 'Calculado automáticamente'
+            },
+            impuestos_linea: {
+              type: 'number',
+              format: 'decimal',
+              example: 28.86,
+              description: 'Calculado automáticamente'
+            },
+            total_linea: {
+              type: 'number',
+              format: 'decimal',
+              example: 269.36,
+              description: 'Calculado automáticamente'
+            },
             descripcion_producto: {
               type: 'string',
               example: 'Producto de alta calidad'
@@ -184,14 +203,6 @@ const swaggerOptions = {
             numero_linea: {
               type: 'integer',
               example: 1
-            },
-            nombre_producto: {
-              type: 'string',
-              example: 'Producto ABC'
-            },
-            codigo_producto: {
-              type: 'string',
-              example: 'PROD-001'
             }
           }
         },

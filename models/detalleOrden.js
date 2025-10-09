@@ -23,9 +23,8 @@ class DetalleOrden {
   // Obtener detalles de una orden
   static async obtenerPorOrden(id_orden_compra) {
     const [rows] = await db.execute(`
-      SELECT doc.*, p.nombre as nombre_producto, p.codigo as codigo_producto
+      SELECT doc.*
       FROM detalles_orden_compra doc
-      LEFT JOIN productos p ON doc.id_producto = p.id_producto
       WHERE doc.id_orden_compra = ?
       ORDER BY doc.numero_linea
     `, [id_orden_compra]);

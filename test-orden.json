@@ -1,0 +1,31 @@
+{
+  "orden": {
+    "id_proveedor": 1,
+    "numero_orden": "OC-2024-TEST-001",
+    "fecha_orden": "2024-10-08",
+    "fecha_entrega_esperada": "2024-10-15",
+    "estado": "Pendiente",
+    "moneda": "GTQ",
+    "terminos_pago": "30 días",
+    "observaciones": "Orden de prueba",
+    "creado_por": "test@ejemplo.com"
+  },
+  "detalles": [
+    {
+      "id_producto": 101,
+      "cantidad": 5,
+      "precio_unitario": 25.50,
+      "descuento": 2.0,
+      "descripcion_producto": "Producto desde API externa - ID 101",
+      "numero_linea": 1
+    },
+    {
+      "id_producto": 202,
+      "cantidad": 3,
+      "precio_unitario": 45.75,
+      "descuento": 0,
+      "descripcion_producto": "Producto desde API externa - ID 202",
+      "numero_linea": 2
+    }
+  ]
+}
