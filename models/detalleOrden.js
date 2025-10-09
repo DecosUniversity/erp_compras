@@ -5,16 +5,23 @@ class DetalleOrden {
   static async agregarProducto(detalleData) {
     const {
       id_orden_compra, id_producto, cantidad, precio_unitario,
-      descuento, descripcion_producto, numero_linea
+      descuento, subtotal_linea, impuestos_linea, total_linea,
+      descripcion_producto, numero_linea
     } = detalleData;
+
+    // Calcular valores si no se proporcionan
+    const subtotal = subtotal_linea || (cantidad * precio_unitario * (1 - (descuento || 0) / 100));
+    const impuestos = impuestos_linea || (subtotal * 0.15); // 15% de impuestos por defecto
+    const total = total_linea || (subtotal + impuestos);
 
     const [result] = await db.execute(
       `INSERT INTO detalles_orden_compra 
        (id_orden_compra, id_producto, cantidad, precio_unitario, 
-        descuento, descripcion_producto, numero_linea) 
-       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        descuento, subtotal_linea, impuestos_linea, total_linea,
+        descripcion_producto, numero_linea) 
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [id_orden_compra, id_producto, cantidad, precio_unitario,
-       descuento, descripcion_producto, numero_linea]
+       descuento, subtotal, impuestos, total, descripcion_producto, numero_linea]
     );
 
     return result.insertId;
@@ -34,13 +41,19 @@ class DetalleOrden {
 
   // Actualizar detalle
   static async actualizar(id_detalle, detalleData) {
-    const { cantidad, precio_unitario, descuento } = detalleData;
+    const { cantidad, precio_unitario, descuento, subtotal_linea, impuestos_linea, total_linea } = detalleData;
+
+    // Calcular valores si no se proporcionan
+    const subtotal = subtotal_linea || (cantidad * precio_unitario * (1 - (descuento || 0) / 100));
+    const impuestos = impuestos_linea || (subtotal * 0.15); // 15% de impuestos por defecto
+    const total = total_linea || (subtotal + impuestos);
 
     const [result] = await db.execute(
       `UPDATE detalles_orden_compra 
-       SET cantidad = ?, precio_unitario = ?, descuento = ?
+       SET cantidad = ?, precio_unitario = ?, descuento = ?,
+           subtotal_linea = ?, impuestos_linea = ?, total_linea = ?
        WHERE id_detalle = ?`,
-      [cantidad, precio_unitario, descuento, id_detalle]
+      [cantidad, precio_unitario, descuento, subtotal, impuestos, total, id_detalle]
     );
 
     return result.affectedRows;
