@@ -10,9 +10,10 @@ class DetalleOrden {
     } = detalleData;
 
     // Calcular valores si no se proporcionan
-    const subtotal = subtotal_linea || (cantidad * precio_unitario * (1 - (descuento || 0) / 100));
-    const impuestos = impuestos_linea || 0; // Los precios ya incluyen impuestos
-    const total = total_linea || subtotal; // Total = subtotal (sin impuestos adicionales)
+    const subtotalConImpuestos = cantidad * precio_unitario * (1 - (descuento || 0) / 100);
+    const subtotal = subtotal_linea || (subtotalConImpuestos / 1.12); // Precio sin impuestos (dividir por 1.12)
+    const impuestos = impuestos_linea || (subtotalConImpuestos - subtotal); // Impuestos extraídos del precio
+    const total = total_linea || subtotalConImpuestos; // Total = precio original (ya incluye impuestos)
 
     const [result] = await db.execute(
       `INSERT INTO detalles_orden_compra 
@@ -44,9 +45,10 @@ class DetalleOrden {
     const { cantidad, precio_unitario, descuento, subtotal_linea, impuestos_linea, total_linea } = detalleData;
 
     // Calcular valores si no se proporcionan
-    const subtotal = subtotal_linea || (cantidad * precio_unitario * (1 - (descuento || 0) / 100));
-    const impuestos = impuestos_linea || 0; // Los precios ya incluyen impuestos
-    const total = total_linea || subtotal; // Total = subtotal (sin impuestos adicionales)
+    const subtotalConImpuestos = cantidad * precio_unitario * (1 - (descuento || 0) / 100);
+    const subtotal = subtotal_linea || (subtotalConImpuestos / 1.12); // Precio sin impuestos (dividir por 1.12)
+    const impuestos = impuestos_linea || (subtotalConImpuestos - subtotal); // Impuestos extraídos del precio
+    const total = total_linea || subtotalConImpuestos; // Total = precio original (ya incluye impuestos)
 
     const [result] = await db.execute(
       `UPDATE detalles_orden_compra 
