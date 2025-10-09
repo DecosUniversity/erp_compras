@@ -5,16 +5,19 @@ class OrdenCompra {
   static async crear(ordenData) {
     const {
       id_proveedor, numero_orden, fecha_orden, fecha_entrega_esperada,
-      estado, moneda, terminos_pago, observaciones, creado_por
+      estado, subtotal, impuestos, total, moneda, terminos_pago, 
+      observaciones, creado_por
     } = ordenData;
 
     const [result] = await db.execute(
       `INSERT INTO ordenes_compra 
        (id_proveedor, numero_orden, fecha_orden, fecha_entrega_esperada, 
-        estado, moneda, terminos_pago, observaciones, creado_por) 
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        estado, subtotal, impuestos, total, moneda, terminos_pago, 
+        observaciones, creado_por) 
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [id_proveedor, numero_orden, fecha_orden, fecha_entrega_esperada,
-       estado, moneda, terminos_pago, observaciones, creado_por]
+       estado, subtotal, impuestos, total, moneda, terminos_pago, 
+       observaciones, creado_por]
     );
 
     return result.insertId;
