@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const OrdenCompra = require('../models/ordenCompra');
 const DetalleOrden = require('../models/detalleOrden');
+// Posibles estados permitidos
+const ESTADOS_VALIDOS = ['PENDIENTE', 'APROBADA', 'RECHAZADA', 'ENTREGADA'];
 
 /**
  * @swagger
@@ -275,6 +277,63 @@ router.post('/', async (req, res) => {
       message: 'Error al crear orden de compra',
       error: error.message 
     });
+  }
+});
+
+/**
+ * @swagger
+ * /api/ordenes-compra/{id}/estado:
+ *   put:
+ *     summary: Actualizar el estado de una orden de compra
+ *     tags: [Órdenes de Compra]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID de la orden de compra
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               estado:
+ *                 type: string
+ *                 enum: [PENDIENTE, APROBADA, RECHAZADA, ENTREGADA]
+ *                 example: APROBADA
+ *     responses:
+ *       200:
+ *         description: Estado actualizado exitosamente
+ *       400:
+ *         description: Estado inválido
+ *       404:
+ *         description: Orden no encontrada
+ */
+router.put('/:id/estado', async (req, res) => {
+  try {
+    const { id } = req.params;
+    let { estado } = req.body;
+
+    if (!estado) {
+      return res.status(400).json({ success: false, message: 'El estado es requerido' });
+    }
+
+    estado = String(estado).toUpperCase();
+    if (!ESTADOS_VALIDOS.includes(estado)) {
+      return res.status(400).json({ success: false, message: `Estado inválido. Válidos: ${ESTADOS_VALIDOS.join(', ')}` });
+    }
+
+    const affected = await OrdenCompra.actualizarEstado(id, estado);
+    if (!affected) {
+      return res.status(404).json({ success: false, message: 'Orden de compra no encontrada' });
+    }
+
+    return res.json({ success: true, message: 'Estado actualizado exitosamente', data: { id, estado } });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Error al actualizar estado', error: error.message });
   }
 });
 

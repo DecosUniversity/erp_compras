@@ -40,7 +40,7 @@ La documentación interactiva de Swagger está disponible en:
       "numero_orden": "OC-2024-001",
       "fecha_orden": "2024-01-15",
       "fecha_entrega_esperada": "2024-01-25",
-      "estado": "Pendiente",
+      "estado": "PENDIENTE",
       "moneda": "GTQ",
       "terminos_pago": "30 días",
       "observaciones": "Entrega urgente",
@@ -71,7 +71,7 @@ La documentación interactiva de Swagger está disponible en:
 - **Body**:
   ```json
   {
-    "estado": "Aprobada",
+    "estado": "APROBADA",
     "fecha_entrega_esperada": "2024-01-30",
     "observaciones": "Cambio en fecha de entrega"
   }
@@ -81,7 +81,25 @@ La documentación interactiva de Swagger está disponible en:
   - 404: Orden de compra no encontrada
   - 500: Error del servidor
 
-#### 5. DELETE /api/ordenes-compra/{id}
+#### 5.1. PUT /api/ordenes-compra/{id}/estado
+- **Descripción**: Actualizar únicamente el estado de una orden de compra
+- **Tags**: Órdenes de Compra
+- **Parámetros**: 
+  - `id` (path, integer, requerido): ID único de la orden de compra
+- **Body requerido**:
+  ```json
+  {
+    "estado": "APROBADA"
+  }
+  ```
+- **Estados permitidos**: `PENDIENTE`, `APROBADA`, `RECHAZADA`, `ENTREGADA`
+- **Respuestas**:
+  - 200: Estado actualizado exitosamente
+  - 400: Estado inválido o faltante
+  - 404: Orden de compra no encontrada
+  - 500: Error del servidor
+
+#### 6. DELETE /api/ordenes-compra/{id}
 - **Descripción**: Eliminar una orden de compra y todos sus detalles asociados
 - **Tags**: Órdenes de Compra
 - **Parámetros**: 
@@ -151,7 +169,7 @@ La documentación interactiva de Swagger está disponible en:
   "numero_orden": "OC-2024-001",
   "fecha_orden": "2024-01-15",
   "fecha_entrega_esperada": "2024-01-25",
-  "estado": "Pendiente",
+  "estado": "PENDIENTE",
   "moneda": "GTQ",
   "terminos_pago": "30 días",
   "observaciones": "Entrega urgente requerida",
@@ -179,11 +197,10 @@ La documentación interactiva de Swagger está disponible en:
 ```
 
 ### Estados Válidos para Órdenes
-- `Pendiente`
-- `Aprobada`
-- `Enviada`
-- `Recibida`
-- `Cancelada`
+- `PENDIENTE`
+- `APROBADA`
+- `RECHAZADA`
+- `ENTREGADA`
 
 ## Respuestas de la API
 
@@ -233,7 +250,7 @@ POST /api/ordenes-compra
     "numero_orden": "OC-2024-001",
     "fecha_orden": "2024-01-15",
     "fecha_entrega_esperada": "2024-01-25",
-    "estado": "Pendiente",
+    "estado": "PENDIENTE",
     "moneda": "GTQ",
     "terminos_pago": "30 días",
     "observaciones": "Entrega urgente",

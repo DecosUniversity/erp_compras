@@ -63,6 +63,15 @@ class OrdenCompra {
     return result.affectedRows;
   }
 
+  // Actualizar solo el estado de una orden
+  static async actualizarEstado(id_orden_compra, estado) {
+    const [result] = await db.execute(
+      `UPDATE ordenes_compra SET estado = ?, fecha_actualizacion = NOW() WHERE id_orden_compra = ?`,
+      [estado, id_orden_compra]
+    );
+    return result.affectedRows;
+  }
+
   // Eliminar orden
   static async eliminar(id_orden_compra) {
     const [result] = await db.execute(
