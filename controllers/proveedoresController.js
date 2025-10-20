@@ -26,11 +26,11 @@ exports.getProveedorById = async (req, res) => {
 // Crear un nuevo proveedor
 exports.createProveedor = async (req, res) => {
   try {
-    const { nombre, contacto, telefono, email, direccion, ciudad, pais, estado } = req.body;
+    const { nombre, nit, contacto, telefono, email, direccion, ciudad, pais, estado } = req.body;
     
     const [result] = await pool.query(
-      'INSERT INTO proveedores (nombre, contacto, telefono, email, direccion, ciudad, pais, estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-      [nombre, contacto, telefono, email, direccion, ciudad, pais, estado || 'Activo']
+      'INSERT INTO proveedores (nombre, nit, contacto, telefono, email, direccion, ciudad, pais, estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      [nombre, nit, contacto, telefono, email, direccion, ciudad, pais, estado || 'Activo']
     );
     
     const [newRow] = await pool.query('SELECT * FROM proveedores WHERE id_proveedor = ?', [result.insertId]);
@@ -44,11 +44,11 @@ exports.createProveedor = async (req, res) => {
 exports.updateProveedor = async (req, res) => {
   try {
     const { id } = req.params;
-    const { nombre, contacto, telefono, email, direccion, ciudad, pais, estado } = req.body;
+    const { nombre, nit, contacto, telefono, email, direccion, ciudad, pais, estado } = req.body;
     
     const [result] = await pool.query(
-      'UPDATE proveedores SET nombre = ?, contacto = ?, telefono = ?, email = ?, direccion = ?, ciudad = ?, pais = ?, estado = ? WHERE id_proveedor = ?',
-      [nombre, contacto, telefono, email, direccion, ciudad, pais, estado, id]
+      'UPDATE proveedores SET nombre = ?, nit = ?, contacto = ?, telefono = ?, email = ?, direccion = ?, ciudad = ?, pais = ?, estado = ? WHERE id_proveedor = ?',
+      [nombre, nit, contacto, telefono, email, direccion, ciudad, pais, estado, id]
     );
     
     if (result.affectedRows === 0) {

@@ -33,6 +33,7 @@ class DatabaseInitializer {
       CREATE TABLE IF NOT EXISTS proveedores (
         id_proveedor INT PRIMARY KEY AUTO_INCREMENT,
         nombre VARCHAR(255) NOT NULL,
+        nit VARCHAR(20) NOT NULL,
         contacto VARCHAR(255) NOT NULL,
         telefono VARCHAR(20) NOT NULL,
         email VARCHAR(255) NOT NULL,
