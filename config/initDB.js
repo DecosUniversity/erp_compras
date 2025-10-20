@@ -19,6 +19,9 @@ class DatabaseInitializer {
       
       // 4. Crear triggers si no existen
       await this.crearTriggers();
+      
+      // 5. Ejecutar migraciones de esquema
+      await this.ejecutarMigraciones();
 
       console.log('✅ Base de datos inicializada correctamente');
     } catch (error) {
@@ -263,6 +266,34 @@ class DatabaseInitializer {
       }
     } catch (error) {
       console.log('ℹ️ Error insertando datos iniciales:', error.message);
+    }
+  }
+
+  static async ejecutarMigraciones() {
+    console.log('🔄 Verificando migraciones de esquema...');
+    
+    try {
+      // Migración: Agregar campo NIT si no existe
+      const [columns] = await db.execute(`
+        SELECT COLUMN_NAME 
+        FROM INFORMATION_SCHEMA.COLUMNS 
+        WHERE TABLE_SCHEMA = DATABASE() 
+        AND TABLE_NAME = 'proveedores' 
+        AND COLUMN_NAME = 'nit'
+      `);
+      
+      if (columns.length === 0) {
+        console.log('📝 Agregando campo NIT a la tabla proveedores...');
+        await db.execute(`
+          ALTER TABLE proveedores 
+          ADD COLUMN nit VARCHAR(20) NOT NULL DEFAULT '' AFTER nombre
+        `);
+        console.log('✅ Campo NIT agregado exitosamente');
+      } else {
+        console.log('ℹ️ Campo NIT ya existe en la tabla proveedores');
+      }
+    } catch (error) {
+      console.log('⚠️ Error ejecutando migraciones:', error.message);
     }
   }
 }
