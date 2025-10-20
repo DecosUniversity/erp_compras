@@ -2,8 +2,27 @@ const express = require('express');
 const router = express.Router();
 const OrdenCompra = require('../models/ordenCompra');
 const DetalleOrden = require('../models/detalleOrden');
-// Posibles estados permitidos
+// Posibles estados permitidos (API)
 const ESTADOS_VALIDOS = ['PENDIENTE', 'APROBADA', 'RECHAZADA', 'ENTREGADA'];
+
+// Mapeo a valores usados en la BD (p.ej., ENUM o convención existente)
+// Mantener sincronizado con el esquema de la tabla ordenes_compra
+const mapEstadoToDB = (estadoApi) => {
+  switch (estadoApi) {
+    case 'PENDIENTE':
+      return 'Pendiente';
+    case 'APROBADA':
+      return 'Aprobada';
+    case 'RECHAZADA':
+      // ENUM real incluye 'Rechazada'
+      return 'Rechazada';
+    case 'ENTREGADA':
+      // ENUM real incluye 'Completada'
+      return 'Completada';
+    default:
+      return 'Pendiente';
+  }
+};
 
 /**
  * @swagger
@@ -327,7 +346,21 @@ router.put('/:id/estado', async (req, res) => {
     }
 
     try {
-      const affected = await OrdenCompra.actualizarEstado(id, estado);
+      // Verificar estado actual en BD para impedir cambios irreversibles
+      const ordenActual = await OrdenCompra.obtenerPorId(id);
+      if (!ordenActual) {
+        return res.status(404).json({ success: false, message: 'Orden de compra no encontrada' });
+      }
+      const estadoActualDB = String(ordenActual.estado || '').trim();
+      if (['Completada', 'Rechazada'].includes(estadoActualDB)) {
+        return res.status(400).json({
+          success: false,
+          message: `No es posible cambiar el estado de una orden ${estadoActualDB.toUpperCase()}.`
+        });
+      }
+
+      const estadoDB = mapEstadoToDB(estado);
+      const affected = await OrdenCompra.actualizarEstado(id, estadoDB);
       if (!affected) {
         return res.status(404).json({ success: false, message: 'Orden de compra no encontrada' });
       }
