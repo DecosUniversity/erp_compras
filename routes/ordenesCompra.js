@@ -326,13 +326,18 @@ router.put('/:id/estado', async (req, res) => {
       return res.status(400).json({ success: false, message: `Estado inválido. Válidos: ${ESTADOS_VALIDOS.join(', ')}` });
     }
 
-    const affected = await OrdenCompra.actualizarEstado(id, estado);
-    if (!affected) {
-      return res.status(404).json({ success: false, message: 'Orden de compra no encontrada' });
+    try {
+      const affected = await OrdenCompra.actualizarEstado(id, estado);
+      if (!affected) {
+        return res.status(404).json({ success: false, message: 'Orden de compra no encontrada' });
+      }
+      return res.json({ success: true, message: 'Estado actualizado exitosamente', data: { id, estado } });
+    } catch (err) {
+      console.error('[ERROR actualizarEstado]', err);
+      return res.status(500).json({ success: false, message: 'Error al actualizar estado', error: err.message });
     }
-
-    return res.json({ success: true, message: 'Estado actualizado exitosamente', data: { id, estado } });
   } catch (error) {
+    console.error('[ERROR en endpoint /:id/estado]', error);
     return res.status(500).json({ success: false, message: 'Error al actualizar estado', error: error.message });
   }
 });
